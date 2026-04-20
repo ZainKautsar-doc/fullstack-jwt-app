@@ -1,0 +1,6 @@
+{
+  "name": "Fullstack JWT App",
+  "description": "A simple fullstack application with React Vite and Express using PostgreSQL and JWT.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

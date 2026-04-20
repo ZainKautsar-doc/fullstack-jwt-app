@@ -3,6 +3,7 @@ const cors = require('cors');
 const db = require('./db');
 const { generateToken } = require('./utils/jwt');
 const { authMiddleware } = require('./middlewares/auth');
+const { isAdminMiddleware } = require('./middlewares/isAdmin');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -75,6 +76,11 @@ app.get('/profile', authMiddleware, (req, res) => {
   console.log('Route /profile: Accessible by', req.user.email);
   console.log('User data from req.user:', req.user);
   res.json(req.user);
+});
+
+app.get('/admin', authMiddleware, isAdminMiddleware, (req, res) => {
+  console.log('Route /admin: Accessible by Admin', req.user.email);
+  res.send('Welcome Admin');
 });
 
 // Saat server start

@@ -14,6 +14,17 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 1. Ambil token dari query params (Google OAuth redirect)
+    const params = new URLSearchParams(window.location.search);
+    const tokenFromUrl = params.get('token');
+    
+    if (tokenFromUrl) {
+      // Simpan ke localStorage
+      localStorage.setItem('token', tokenFromUrl);
+      // Bersihkan URL dari token agar tidak terlihat di address bar
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
@@ -28,13 +39,13 @@ export default function Home() {
       setJwtData(payload);
       
       if (payload.role === 'admin') {
-        fetch('/admin', {
+        fetch('http://localhost:3000/admin', {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         .then(res => res.json())
         .then(data => {
-          if (data.adminData) {
-            setAdminMsg(JSON.stringify(data.adminData, null, 2));
+          if (data) {
+            setAdminMsg(JSON.stringify(data, null, 2));
           }
         });
       }

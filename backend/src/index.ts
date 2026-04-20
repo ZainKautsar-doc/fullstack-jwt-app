@@ -87,17 +87,17 @@ async function startServer() {
     } else {
       user = mockUsers.find(u => u.id === req.user.id);
     }
-    
+
     if (!user) return res.status(404).json({ error: 'User not found' });
-    
+
     const { password, ...safeUser } = user;
     res.json({ user: safeUser });
   });
 
   // GET /admin (Protected + Role Admin)
   app.get('/admin', authenticateToken, requireAdmin, (req: any, res: any) => {
-    res.json({ 
-      message: 'Welcome Admin!', 
+    res.json({
+      message: 'Welcome Admin!',
       adminData: {
         stats: 'Everything is running smoothly',
         userRole: req.user.role

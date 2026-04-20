@@ -1,5 +1,6 @@
 import { verifyToken } from '../utils/jwt';
 
+
 export const authenticateToken = (req: any, res: any, next: any) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];

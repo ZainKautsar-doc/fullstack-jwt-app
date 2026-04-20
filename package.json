@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx backend/src/index.ts",
-    "start": "tsx backend/src/index.ts",
+    "dev": "vite",
+    "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",

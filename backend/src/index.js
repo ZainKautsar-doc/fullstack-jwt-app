@@ -137,22 +137,25 @@ app.get('/auth/google/callback', async (req, res) => {
       return res.status(500).send('Failed to authenticate with Google');
     }
 
-    // 2. Get user info
+    // 2. Get user info from Google
     const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 
     const googleUser = await userResponse.json();
-    const { email } = googleUser;
+    const email = googleUser.email?.toLowerCase().trim(); // Normalize email
 
     if (!email) {
+      console.error('Google User email not found:', googleUser);
       return res.status(400).send('Google email not found');
     }
 
-    // 3. Database operation
-    let result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-    let user = result.rows[0];
+    // 3. Database operation: CEK USER SEBELUM INSERT
+    console.log(`Checking for user with email: ${email}`);
+    const checkResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    let user = checkResult.rows[0];
 
+    // 4. JIKA BELUM ADA -> INSERT
     if (!user) {
       console.log('User baru (Google), simpan ke database...');
       const insertResult = await db.query(
@@ -160,17 +163,20 @@ app.get('/auth/google/callback', async (req, res) => {
         [email]
       );
       user = insertResult.rows[0];
+    } else {
+      console.log('User sudah ada, gunakan data user lama.');
     }
 
-    // 4. Generate JWT
+    // 5. GENERATE TOKEN (Setelah dapat user, baik dari SELECT atau INSERT)
     const token = generateToken({ id: user.id, email: user.email, role: user.role });
 
-    // 5. Redirect to frontend with token
+    // 6. Redirect to frontend with token
     console.log('Google login sukses, redirecting to frontend...');
     res.redirect(`http://localhost:5173/home?token=${token}`);
 
   } catch (error) {
-    console.error('Google OAuth Error:', error.message);
+    // 7. ERROR HANDLING
+    console.error('Google OAuth Error:', error.stack || error.message);
     res.status(500).send('Internal Server Error during Google Auth');
   }
 });

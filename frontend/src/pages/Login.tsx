@@ -12,8 +12,12 @@ export default function Login() {
     e.preventDefault();
     setError('');
 
+    // DEBUG: console.log(email, password)
+    console.log('Attempting login with:', { email, password });
+
     try {
-      const response = await fetch('/login', {
+      // Gunakan URL lengkap: http://localhost:3000/login
+      const response = await fetch('http://localhost:3000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -22,12 +26,16 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
+        // Simpan token ke localStorage
         localStorage.setItem('token', data.token);
+        // Redirect ke /home
         navigate('/home');
       } else {
-        setError(data.error || 'Login gagal.');
+        // Jika response gagal → tampilkan message dari backend
+        setError(data.message || 'Login gagal.');
       }
     } catch (err) {
+      // Jika fetch gagal → tampilkan "Koneksi ke server gagal"
       setError('Koneksi ke server gagal.');
     }
   };

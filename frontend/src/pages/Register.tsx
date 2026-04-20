@@ -14,7 +14,8 @@ export default function Register() {
     setSuccess('');
 
     try {
-      const response = await fetch('/register', {
+      console.log('Mencoba register untuk email:', email);
+      const response = await fetch('http://localhost:3000/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -28,7 +29,7 @@ export default function Register() {
           navigate('/login');
         }, 1500);
       } else {
-        setError(data.error || 'Register gagal.');
+        setError(data.message || 'Register gagal.');
       }
     } catch (err) {
       setError('Koneksi ke server gagal.');
